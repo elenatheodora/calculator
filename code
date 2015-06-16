@@ -1,0 +1,81 @@
+//
+//  ViewController.swift
+//  Calculator1
+//
+//  Created by Elka Georgieva on 6/15/15.
+//  Copyright (c) 2015 ElenaWill. All rights reserved.
+//
+
+import UIKit
+
+class ViewController: UIViewController
+{
+
+    @IBOutlet weak var display: UILabel!
+    
+    var userIsTyping: Bool = false
+
+    @IBAction func appendDigit(sender: UIButton) {
+        let digit = sender.currentTitle!
+        if userIsTyping{
+        display.text = display.text! + digit
+        }
+        else {
+            display.text = digit
+            userIsTyping = true
+        }
+    }
+    
+    @IBAction func operate(sender: UIButton) {
+        let operation = sender.currentTitle!
+        if userIsTyping{
+            enter()
+        }
+            switch operation {
+            case "✖️": performOperation {$0 * $1}
+            case "➗": performOperation {$1 / $0}
+            case "➕": performOperation {$0 + $1}
+            case "➖": performOperation {$1 - $0}
+            default: break
+            }
+        
+    }
+    func performOperation(operation: (Double,Double) -> Double){
+        if operandStack.count>=2 {
+            displayValue = operation(operandStack.removeLast(), operandStack.removeLast())
+            enter()
+        }
+    }
+    
+    func multiply (op1:Double, op2:Double) ->Double{
+        return op1 * op2
+    }
+    func divide (op1:Double, op2:Double) ->Double{
+        return op1 / op2
+    }
+    func add (op1:Double, op2:Double) ->Double{
+        return op1 + op2
+    }
+    func subtract (op1:Double, op2:Double) ->Double{
+        return op1 - op2
+    }
+    
+    var operandStack = Array<Double>()
+    
+    @IBAction func enter() {
+        userIsTyping = false
+        operandStack.append(displayValue)
+        println("operand stack: \(operandStack)")
+    }
+    
+    var displayValue: Double {
+        get {
+          return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
+        }
+        set { //makes display.text into a double
+            display.text = "\(newValue)"
+            userIsTyping = false
+        }
+    }
+}
+
